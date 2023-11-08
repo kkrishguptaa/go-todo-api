@@ -10,7 +10,6 @@ COPY . .
 RUN go build -v -o /usr/local/bin/go-todo-api ./...
 
 ENV GIN_MODE=release
-EXPOSE $PORT
-EXPOSE 10000
+EXPOSE 3000
 
 CMD ["go-todo-api"]

@@ -1,11 +1,9 @@
 package main
 
 import (
- 	"errors"
-  "os"
-  "fmt"
-	"net/http"
 	"github.com/gin-gonic/gin"
+	"errors"
+	"net/http"
 )
 
 type todo struct {
@@ -115,12 +113,5 @@ func main() {
 	router.PATCH("/todos/:id", patchTodo)
 	router.DELETE("/todos/:id", deleteTodo)
 
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "10000"
-	}
-
-	URL := fmt.Sprintf("localhost:%s", port)
-
-	router.Run(URL)
+	router.Run("localhost:3000")
 }

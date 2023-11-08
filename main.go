@@ -1,17 +1,19 @@
 package main
 
 import (
- 	"errors"
-  "os"
-  "fmt"
+	"errors"
 	"net/http"
+
 	"github.com/gin-gonic/gin"
 )
 
 type todo struct {
-	ID        string    `json:"id"`
+	ID        string `json:"id"`
 	Item      string `json:"title"`
 	Completed bool   `json:"completed"`
+}
+
+type Route struct {
 }
 
 var todos = []todo{
@@ -33,77 +35,94 @@ var todos = []todo{
 }
 
 func getAllTodos(context *gin.Context) {
-  context.IndentedJSON(http.StatusOK, todos)
+	context.IndentedJSON(http.StatusOK, todos)
 }
-
 
 func getTodo(context *gin.Context) {
-  id := context.Param("id")
+	id := context.Param("id")
 
-  for _, todo := range todos {
-    if todo.ID == id {
-      context.IndentedJSON(http.StatusOK, todo)
-      return
-    }
-  }
+	for _, todo := range todos {
+		if todo.ID == id {
+			context.IndentedJSON(http.StatusOK, todo)
+			return
+		}
+	}
 
-  context.IndentedJSON(http.StatusNotFound, gin.H{"error": errors.New("Todo not found").Error()})
-  return
+	context.IndentedJSON(http.StatusNotFound, gin.H{"error": errors.New("Todo not found").Error()})
+	return
 }
 
-func createTodo (context *gin.Context) {
-  var newTodo todo
+func createTodo(context *gin.Context) {
+	var newTodo todo
 
-  if err := context.BindJSON(&newTodo); err != nil {
-    context.IndentedJSON(http.StatusBadRequest, gin.H{"message": "Invalid request", "error": err.Error()})
+	if err := context.BindJSON(&newTodo); err != nil {
+		context.IndentedJSON(http.StatusBadRequest, gin.H{"message": "Invalid request", "error": err.Error()})
 
-    return
-  }
+		return
+	}
 
-  todos = append(todos, newTodo)
+	todos = append(todos, newTodo)
 
-  context.IndentedJSON(http.StatusCreated, newTodo)
+	context.IndentedJSON(http.StatusCreated, newTodo)
 }
 
-func patchTodo (context *gin.Context) {
-  id := context.Param("id")
+func patchTodo(context *gin.Context) {
+	id := context.Param("id")
 
-  var updatedTodo struct {
-    Item string `json:"title"`
-    Completed bool `json:"completed"`
-  }
+	var updatedTodo struct {
+		Item      string `json:"title"`
+		Completed bool   `json:"completed"`
+	}
 
-  if err := context.BindJSON(&updatedTodo); err != nil {
-    context.IndentedJSON(http.StatusBadRequest, gin.H{"message": "Invalid request", "error": err.Error()})
-    return
-  }
+	if err := context.BindJSON(&updatedTodo); err != nil {
+		context.IndentedJSON(http.StatusBadRequest, gin.H{"message": "Invalid request", "error": err.Error()})
+		return
+	}
 
-  var newTodo todo = todo{ID: id, Item: updatedTodo.Item, Completed: updatedTodo.Completed}
+	var newTodo todo = todo{ID: id, Item: updatedTodo.Item, Completed: updatedTodo.Completed}
 
-  for index, todo := range todos {
-    if todo.ID == id {
-      todos[index] = newTodo
+	for index, todo := range todos {
+		if todo.ID == id {
+			todos[index] = newTodo
 
-      context.IndentedJSON(http.StatusOK, newTodo)
-      return
-    }
-  }
+			context.IndentedJSON(http.StatusOK, newTodo)
+			return
+		}
+	}
 
-  context.IndentedJSON(http.StatusNotFound, gin.H{"error": errors.New("Todo not found").Error()})
-  return
+	context.IndentedJSON(http.StatusNotFound, gin.H{"error": errors.New("Todo not found").Error()})
+	return
 }
 
-func deleteTodo (context *gin.Context) {
-  id := context.Param("id")
+func deleteTodo(context *gin.Context) {
+	id := context.Param("id")
 
-  for index, todo := range todos {
-    if todo.ID == id {
-      todos = append(todos[:index], todos[index+1:]...)
+	for index, todo := range todos {
+		if todo.ID == id {
+			todos = append(todos[:index], todos[index+1:]...)
 
-      context.IndentedJSON(http.StatusOK, gin.H{"message": "Todo deleted"})
-      return
-    }
-  }
+			context.IndentedJSON(http.StatusOK, gin.H{"message": "Todo deleted"})
+			return
+		}
+	}
+}
+
+func defaultHandler(routes gin.RoutesInfo) gin.HandlerFunc {
+	return func(context *gin.Context) {
+		var routesJSON []gin.H
+
+		for _, route := range routes {
+			routesJSON = append(routesJSON, gin.H{
+				"method":  route.Method,
+				"path":    route.Path,
+				"handler": route.Handler,
+			})
+		}
+
+		context.IndentedJSON(http.StatusOK,
+			gin.H{"routes": routesJSON},
+		)
+	}
 }
 
 func main() {
@@ -114,13 +133,7 @@ func main() {
 	router.POST("/todos", createTodo)
 	router.PATCH("/todos/:id", patchTodo)
 	router.DELETE("/todos/:id", deleteTodo)
+	router.GET("/", defaultHandler(router.Routes()))
 
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "10000"
-	}
-
-	URL := fmt.Sprintf("localhost:%s", port)
-
-	router.Run(URL)
+	router.Run()
 }

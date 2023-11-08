@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://gitlab.com/xkrishguptaa/go-todo-aoi/-/raw/main/assets/logo.png" height="100px" width="100px" />
+  <img src="https://gitlab.com/xkrishguptaa/go-todo-api/-/raw/main/assets/logo.png" height="100px" width="100px" />
   <br />
   <h1>Go Todo API</h1>
   <p>Supports retrieval, creation, modification and deletion of Todos</p>
@@ -17,9 +17,7 @@ It is written in Go and uses the [Gin](https://github.com/gin-gonic/gin) framewo
 
 The following is the tutorial I followed to build this API:
 
-<figure class="video_container">
-  <iframe src="https://www.youtube.com/embed/d_L64KT3SFM" frameborder="0" allowfullscreen="true"> </iframe>
-</figure>
+[Build a Rest API with GoLang](https://www.youtube.com/embed/d_L64KT3SFM)
 
 ## 📦 Built With
 

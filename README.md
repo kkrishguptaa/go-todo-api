@@ -1,11 +1,11 @@
 <div align="center">
-  <img src="https://gitlab.com/xkrishguptaa/go-todo-aoi/-/raw/main/assets/logo.png" height="100px" width="100px" />
+  <img src="https://gitlab.com/xkrishguptaa/go-todo-api/-/raw/main/assets/logo.png" height="100px" width="100px" />
   <br />
   <h1>Go Todo API</h1>
   <p>Supports retrieval, creation, modification and deletion of Todos</p>
   <p>
     <a href="https://go.postman.co/collections/30796221-cdf39375-8b13-4130-95c1-d0db3687e53e"><img src="https://img.shields.io/badge/View%20Postman%20Collection-2965F1?style=for-the-badge" alt="View Postman Collection" /></a>
-    <a href="https://hub.docker.com/r/xkrishguptaa/go-todo-api"><img src="https://img.shields.io/badge/Vie%20On%20Dockerhub-2965F1?style=for-the-badge" alt="View On Dockerhub" /></a>
+    <a href="https://hub.docker.com/r/xkrishguptaa/go-todo-api"><img src="https://img.shields.io/badge/View%20On%20Dockerhub-2965F1?style=for-the-badge" alt="View On Dockerhub" /></a>
   </p>
 </div>
 
@@ -17,9 +17,7 @@ It is written in Go and uses the [Gin](https://github.com/gin-gonic/gin) framewo
 
 The following is the tutorial I followed to build this API:
 
-<figure class="video_container">
-  <iframe src="https://www.youtube.com/embed/d_L64KT3SFM" frameborder="0" allowfullscreen="true"> </iframe>
-</figure>
+[Build a Rest API with GoLang](https://www.youtube.com/embed/d_L64KT3SFM)
 
 ## 📦 Built With
 

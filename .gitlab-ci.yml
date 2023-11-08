@@ -30,7 +30,7 @@ dockerhub-build:
   variables:
     DOCKER_IMAGE_NAME: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
   before_script:
-    - docker login -u "$DOCKERHUB_USER" -p "$DOCKERHUB_PAT"
+    - docker login -u "$DOCKERHUB_USER" -p "$DOCKERHUB_PAT" "registry.hub.docker.com"
   script:
     - docker build --pull -t "$DOCKER_IMAGE_NAME" .
     - docker push "$DOCKER_IMAGE_NAME"

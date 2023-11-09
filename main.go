@@ -5,8 +5,6 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"errors"
-	"net/http"
 )
 
 type todo struct {

@@ -32,8 +32,7 @@
       {
         "name": {
           "repository": "go-todo-api",
-          "tag": "latest",
-          "skipLogin": true
+          "tag": "latest"
         }
       }
     ],

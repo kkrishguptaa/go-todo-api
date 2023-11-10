@@ -135,5 +135,7 @@ func main() {
 	router.DELETE("/todos/:id", deleteTodo)
 	router.GET("/", defaultHandler(router.Routes()))
 
+	router.StaticFile("/favicon.ico", "./favicon.ico")
+
 	router.Run()
 }

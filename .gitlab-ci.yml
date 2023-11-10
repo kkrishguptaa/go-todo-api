@@ -29,7 +29,7 @@ dockerhub-build:
   stage: build
   variables:
     CI_REGISTRY: docker.io
-    CI_REGISTRY_IMAGE: index.docker.io/$DOCKERHUB_USER/$CI_PROJECT_NAME
+    CI_REGISTRY_IMAGE: index.docker.io/$DOCKER_USERNAME/$CI_PROJECT_NAME
     DOCKER_IMAGE_NAME: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
   before_script:
     - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD" $CI_REGISTRY

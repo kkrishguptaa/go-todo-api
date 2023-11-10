@@ -7,6 +7,8 @@ before_script:
 
 release:
   image: node:21.0.0
+  services:
+    - docker:dind
   stage: release
   before_script:
     - docker login -u $DOCKER_USER -p $DOCKER_PASSWORD

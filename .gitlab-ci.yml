@@ -11,7 +11,7 @@ git-release:
     - npx semantic-release
 
 dockerhub-release:
-  image: docker:cli
+  image: alpine:latest
   stage: release
   services:
     - docker:dind

@@ -25,6 +25,10 @@ The following is the tutorial I followed to build this API:
 - [Gin](https://github.com/gin-gonic/gin)
 - [Docker](https://www.docker.com/)
 
+## 🌐 Check out Deployed
+
+It is deployed at [go-todo-api-sa9e.onrender.com](https://go-todo-api-sa9e.onrender.com)
+
 ## 🚀 Getting Started
 
 ### 🐳 Using Docker

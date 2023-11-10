@@ -5,8 +5,10 @@ stages:
 before_script:
   - npm install
 
-publish:
+release:
   image: node:21.0.0
   stage: release
+  before_script:
+    - docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
   script:
     - npx semantic-release

@@ -1,16 +1,24 @@
-# The release pipeline will run only if all jobs in the test pipeline are successful
 stages:
     - release
 
 before_script:
   - npm install
 
-release:
+git-release:
   image: node:21.0.0
+  stage: release
+  script:
+    - npx semantic-release
+
+dockerhub-release:
+  image: alpine:latest
+  stage: release
   services:
     - docker:dind
-  stage: release
   before_script:
     - docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
   script:
-    - npx semantic-release
+    - docker build -t $DOCKER_USER/$DOCKER_IMAGE_NAME:$CI_COMMIT_SHA .
+    - docker push $DOCKER_USER/$DOCKER_IMAGE_NAME:$CI_COMMIT_SHA
+    - docker tag $DOCKER_USER/$DOCKER_IMAGE_NAME:$CI_COMMIT_SHA $DOCKER_USER/$DOCKER_IMAGE_NAME:latest
+    - docker push $DOCKER_USER/$DOCKER_IMAGE_NAME:latest

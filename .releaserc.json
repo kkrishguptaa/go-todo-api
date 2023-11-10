@@ -28,16 +28,6 @@
       }
     ],
     [
-      "@semantic-release-plus/docker",
-      {
-        "name": {
-          "repository": "go-todo-api",
-          "tag": "latest",
-          "skipLogin": true
-        }
-      }
-    ],
-    [
       "@semantic-release/npm",
       {
         "npmPublish": false

@@ -1,9 +1,4 @@
-bin/
 *.DS_Store
-
-node_modules/
-npm*.log
-yarn*.log
 
 # Binaries for programs and plugins
 *.exe

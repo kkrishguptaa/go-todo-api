@@ -15,14 +15,11 @@ This is a simple REST API for a Todo application. It supports retrieval, creatio
 
 It is written in Go and uses the [Gin](https://github.com/gin-gonic/gin) framework. I was trying to learn Go and this is my first project in Go.
 
-The following is the tutorial I followed to build this API:
-
-[Build a Rest API with GoLang](https://www.youtube.com/embed/d_L64KT3SFM)
-
 ## 📦 Built With
 
 - [Go](https://golang.org/)
 - [Gin](https://github.com/gin-gonic/gin)
+- [MongoDB](https://www.mongodb.com/)
 - [Docker](https://www.docker.com/)
 
 ## 🌐 Check out Deployed
@@ -31,13 +28,23 @@ It is deployed at [go-todo-api-sa9e.onrender.com](https://go-todo-api-sa9e.onren
 
 ## 🚀 Getting Started
 
+You need to create a `.env` file in the root directory of the project and add the following environment variables:
+
+```bash
+DATABASE_URL=<MongoDB Connection String>
+DATABASE_NAME=<MongoDB Database Name>
+```
+
+Or you can set the environment variables directly.
+
+Make sure that the MongoDB database is running and the connection string is correct. The database needs to have a collection named `Todos`.
+
 ### 🐳 Using Docker
 
 The easiest way to get started is to use Docker. You can pull the image from Dockerhub and run it using the following commands:
 
 ```bash
-docker pull xkrishguptaa/go-todo-api
-docker run -p 3000:3000 xkrishguptaa/go-todo-api
+docker run -p 8080:8080 --env-file .env xkrishguptaa/go-todo-api
 ```
 
 ### 🛠️ Building From Source

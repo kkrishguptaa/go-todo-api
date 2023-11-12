@@ -2,8 +2,6 @@ default:
   image: docker:cli
   services:
     - docker:dind
-  
-  
 
 gitlab-cr-build:
   stage: build
@@ -21,8 +19,8 @@ gitlab-cr-build:
       fi
 
   rules:
-    - if: $CI_COMMIT_BRANCH
-      exists:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - exists:
         - Dockerfile
 
 dockerhub-build:
@@ -43,6 +41,6 @@ dockerhub-build:
       fi
 
   rules:
-    - if: $CI_COMMIT_BRANCH
-      exists:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - exists:
         - Dockerfile

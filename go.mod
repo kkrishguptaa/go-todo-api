@@ -1,4 +1,4 @@
-module xkrishguptaa/go-todo-api
+module go-todo-api
 
 go 1.21.3
 

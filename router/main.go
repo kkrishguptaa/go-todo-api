@@ -1,4 +1,0 @@
-package router
-
-func main() {
-}

@@ -1,4 +1,4 @@
-module gitlab.com/xkrishguptaa/go-todo-api/-/tree/main
+module gitlab.com/xkrishguptaa/go-todo-api
 
 go 1.21.3
 

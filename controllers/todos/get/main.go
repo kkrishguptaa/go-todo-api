@@ -13,18 +13,18 @@ import (
 )
 
 func GetTodo(ctx *gin.Context) {
- 	path := ctx.Param("id")
+	path := ctx.Param("id")
 
 	if path == "" {
 		ctx.IndentedJSON(http.StatusBadRequest, gin.H{
-		"message": errors.New("id is required").Error(),
+			"message": errors.New("id is required").Error(),
 		})
 		return
 	}
 
 	if len(path) != 24 {
 		ctx.IndentedJSON(http.StatusBadRequest, gin.H{
-		"message": "id is invalid",
+			"message": "id is invalid",
 		})
 		return
 	}
@@ -84,7 +84,7 @@ func GetAllTodos(ctx *gin.Context) {
 
 	if len(todos) == 0 {
 		ctx.IndentedJSON(http.StatusNoContent, gin.H{
-		  "message": errors.New("no todos found").Error(),
+			"message": errors.New("no todos found").Error(),
 		})
 		return
 	}

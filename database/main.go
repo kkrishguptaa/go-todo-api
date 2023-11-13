@@ -14,23 +14,23 @@ var Database *mongo.Database
 var Collection *mongo.Collection
 
 func Init() {
-  getClient()
-  getDatabase()
-  getCollection()
+	getClient()
+	getDatabase()
+	getCollection()
 }
 
-func getClient () {
-  options.ServerAPI(options.ServerAPIVersion1)
-  bsonOpts := &options.BSONOptions {
-    UseJSONStructTags: true,
-    OmitZeroStruct: true,
-  }
+func getClient() {
+	options.ServerAPI(options.ServerAPIVersion1)
+	bsonOpts := &options.BSONOptions{
+		UseJSONStructTags: true,
+		OmitZeroStruct:    true,
+	}
 
 	client, err := mongo.Connect(
-	context.TODO(),
-	options.Client().
-	  SetBSONOptions(bsonOpts).
-	  ApplyURI(env.Get("DATABASE_URL")),
+		context.TODO(),
+		options.Client().
+			SetBSONOptions(bsonOpts).
+			ApplyURI(env.Get("DATABASE_URL")),
 	)
 
 	if err != nil {
@@ -40,10 +40,10 @@ func getClient () {
 	println("connected to cluster")
 
 	if err := client.Ping(context.Background(), readpref.Primary()); err != nil {
-     panic(err)
-  }
+		panic(err)
+	}
 
-  println("pinged cluster")
+	println("pinged cluster")
 
 	Client = client
 }
@@ -57,9 +57,9 @@ func getDatabase() {
 }
 
 func getCollection() {
-  collection := Database.Collection("Todos")
+	collection := Database.Collection("Todos")
 
-  println("connected to collection Todos")
+	println("connected to collection Todos")
 
-  Collection = collection
+	Collection = collection
 }

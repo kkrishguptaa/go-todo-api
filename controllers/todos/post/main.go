@@ -10,27 +10,27 @@ import (
 )
 
 func CreateTodo(ctx *gin.Context) {
-  var todo types.TodoWithoutID
+	var todo types.TodoWithoutID
 
-  if err := ctx.ShouldBindJSON(&todo); err != nil {
-    ctx.IndentedJSON(http.StatusBadRequest, gin.H{
-      "message": err.Error(),
-    })
-    return
-  }
+	if err := ctx.ShouldBindJSON(&todo); err != nil {
+		ctx.IndentedJSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
 
-  result, err := database.Collection.InsertOne(context.TODO(), todo)
+	result, err := database.Collection.InsertOne(context.TODO(), todo)
 
-  if err != nil {
-    ctx.IndentedJSON(http.StatusInternalServerError, gin.H{
-      "message": err.Error(),
-    })
-    return
-  }
+	if err != nil {
+		ctx.IndentedJSON(http.StatusInternalServerError, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
 
-  ctx.IndentedJSON(http.StatusCreated, gin.H{
-    "id": result.InsertedID,
-  })
+	ctx.IndentedJSON(http.StatusCreated, gin.H{
+		"id": result.InsertedID,
+	})
 
-  return
+	return
 }

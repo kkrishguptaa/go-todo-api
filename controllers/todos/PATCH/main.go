@@ -12,20 +12,19 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-
 func PatchTodo(ctx *gin.Context) {
- 	path := ctx.Param("id")
+	path := ctx.Param("id")
 
 	if path == "" {
 		ctx.IndentedJSON(http.StatusBadRequest, gin.H{
-		"message": errors.New("id is required").Error(),
+			"message": errors.New("id is required").Error(),
 		})
 		return
 	}
 
 	if len(path) != 24 {
 		ctx.IndentedJSON(http.StatusBadRequest, gin.H{
-		"message": "id is invalid",
+			"message": "id is invalid",
 		})
 		return
 	}
@@ -44,26 +43,26 @@ func PatchTodo(ctx *gin.Context) {
 	var todo types.TodoWithoutID
 
 	if err := ctx.ShouldBindJSON(&todo); err != nil {
-	  ctx.IndentedJSON(http.StatusBadRequest, gin.H{
-      "message": err.Error(),
-    })
-    return
-  }
+		ctx.IndentedJSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
 
-  update := bson.M{
-    "$set": todo,
-  }
+	update := bson.M{
+		"$set": todo,
+	}
 
-  result := database.Collection.FindOneAndUpdate(context.TODO(), filter, update)
+	result := database.Collection.FindOneAndUpdate(context.TODO(), filter, update)
 
-  if err := result.Err(); err != nil {
-    ctx.IndentedJSON(http.StatusInternalServerError, gin.H{
-      "message": err.Error(),
-    })
-    return
-  }
+	if err := result.Err(); err != nil {
+		ctx.IndentedJSON(http.StatusInternalServerError, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
 
-  ctx.IndentedJSON(http.StatusAccepted, gin.H{
-    "message": "Todo updated successfully",
-  })
+	ctx.IndentedJSON(http.StatusAccepted, gin.H{
+		"message": "Todo updated successfully",
+	})
 }

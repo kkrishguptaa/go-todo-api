@@ -1,4 +1,4 @@
-package delete
+package del
 
 import (
 	"context"
@@ -12,18 +12,18 @@ import (
 )
 
 func DeleteTodo(ctx *gin.Context) {
- 	path := ctx.Param("id")
+	path := ctx.Param("id")
 
 	if path == "" {
 		ctx.IndentedJSON(http.StatusBadRequest, gin.H{
-		"message": errors.New("id is required").Error(),
+			"message": errors.New("id is required").Error(),
 		})
 		return
 	}
 
 	if len(path) != 24 {
 		ctx.IndentedJSON(http.StatusBadRequest, gin.H{
-		"message": "id is invalid",
+			"message": "id is invalid",
 		})
 		return
 	}
@@ -39,18 +39,18 @@ func DeleteTodo(ctx *gin.Context) {
 
 	filter := bson.M{"_id": id}
 
-  result := database.Collection.FindOneAndDelete(context.TODO(), filter)
+	result := database.Collection.FindOneAndDelete(context.TODO(), filter)
 
-  if err := result.Err(); err != nil {
-    ctx.IndentedJSON(http.StatusInternalServerError, gin.H{
-      "message": err.Error(),
-    })
-    return
-  }
+	if err := result.Err(); err != nil {
+		ctx.IndentedJSON(http.StatusInternalServerError, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
 
-  ctx.IndentedJSON(http.StatusOK, gin.H{
-    "message": "Todo deleted successfully",
-  })
+	ctx.IndentedJSON(http.StatusOK, gin.H{
+		"message": "Todo deleted successfully",
+	})
 
-  return
+	return
 }

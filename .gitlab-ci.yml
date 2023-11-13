@@ -25,7 +25,7 @@ gitlab-cr-release:
   script:
     - docker tag $IMAGE_NAME $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
     - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
-    - docker tag $IMAGE_NAME $CI_REGISTRY_IMAGE:latest
+    - docker tag $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME $CI_REGISTRY_IMAGE:latest
     - docker push $CI_REGISTRY_IMAGE:latest
   rules:
     - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
@@ -44,5 +44,5 @@ dockerhub-release:
   script:
     - docker tag $IMAGE_NAME $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
     - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
-    - docker tag $IMAGE_NAME $CI_REGISTRY_IMAGE:latest
+    - docker tag $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME $CI_REGISTRY_IMAGE:latest
     - docker push $CI_REGISTRY_IMAGE:latest

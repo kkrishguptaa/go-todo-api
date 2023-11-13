@@ -8,9 +8,6 @@ stages:
 
 gitlab-cr-release:
   stage: release
-  needs:
-    - job: build
-      artifacts: true
   before_script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - docker build --pull -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME" .
@@ -24,9 +21,6 @@ gitlab-cr-release:
 
 dockerhub-release:
   stage: release
-  needs:
-    - job: build
-      artifacts: true
   variables:
     CI_REGISTRY: docker.io
     CI_REGISTRY_IMAGE: index.docker.io/$DOCKER_USERNAME/$CI_PROJECT_NAME

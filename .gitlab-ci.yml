@@ -1,5 +1,5 @@
 default:
-  image: alpine:latest
+  image: docker:stable
   services:
     - docker:dind
 
@@ -12,8 +12,6 @@ variables:
 
 build:
   stage: build
-  before_script:
-    - apk add --no-cache docker-cli
   script:
     - docker build --pull -t "$IMAGE_NAME" .
 

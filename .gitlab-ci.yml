@@ -1,46 +1,47 @@
 default:
-  image: docker:cli
+  image: alpine:latest
   services:
     - docker:dind
 
-gitlab-cr-build:
+stages:
+  - build
+  - release
+
+variables:
+  IMAGE_NAME: $CI_PROJECT_NAME:$CI_COMMIT_SHA
+
+build:
   stage: build
-  variables:
-    DOCKER_IMAGE_NAME: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
   before_script:
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+    - apk add --no-cache docker-cli
   script:
-    - docker build --pull -t "$DOCKER_IMAGE_NAME" .
-    - docker push "$DOCKER_IMAGE_NAME"
-    - |
-      if [[ "$CI_COMMIT_BRANCH" == "$CI_DEFAULT_BRANCH" ]]; then
-        docker tag "$DOCKER_IMAGE_NAME" "$CI_REGISTRY_IMAGE:latest"
-        docker push "$CI_REGISTRY_IMAGE:latest"
-      fi
+    - docker build --pull -t "$IMAGE_NAME" .
 
+gitlab-cr-release:
+  stage: release
+  needs:
+    - job: build
+      artifacts: true
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - docker tag $IMAGE_NAME $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
+    - docker tag $IMAGE_NAME $CI_REGISTRY_IMAGE:latest
+    - docker push $CI_REGISTRY_IMAGE:latest
   rules:
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-    - exists:
-        - Dockerfile
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
+      when: always
 
-dockerhub-build:
-  stage: build
+dockerhub-release:
+  stage: releave
   variables:
     CI_REGISTRY: docker.io
     CI_REGISTRY_IMAGE: index.docker.io/$DOCKER_USERNAME/$CI_PROJECT_NAME
-    DOCKER_IMAGE_NAME: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
   before_script:
     - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD" $CI_REGISTRY
   script:
-    - docker build --pull -t "$DOCKER_IMAGE_NAME" .
-    - docker push "$DOCKER_IMAGE_NAME"
-    - |
-      if [[ "$CI_COMMIT_BRANCH" == "$CI_DEFAULT_BRANCH" ]]; then
-        docker tag "$DOCKER_IMAGE_NAME" "$CI_REGISTRY_IMAGE:latest"
-        docker push "$CI_REGISTRY_IMAGE:latest"
-      fi
-
-  rules:
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-    - exists:
-        - Dockerfile
+    - docker tag $IMAGE_NAME $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
+    - docker tag $IMAGE_NAME $CI_REGISTRY_IMAGE:latest
+    - docker push $CI_REGISTRY_IMAGE:latest

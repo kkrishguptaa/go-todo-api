@@ -4,16 +4,7 @@ default:
     - docker:dind
 
 stages:
-  - build
   - release
-
-variables:
-  IMAGE_NAME: $CI_PROJECT_NAME:$CI_COMMIT_SHA
-
-build:
-  stage: build
-  script:
-    - docker build --pull -t "$IMAGE_NAME" .
 
 gitlab-cr-release:
   stage: release
@@ -22,8 +13,8 @@ gitlab-cr-release:
       artifacts: true
   before_script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker build --pull -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME" .
   script:
-    - docker tag $IMAGE_NAME $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
     - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
     - docker tag $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME $CI_REGISTRY_IMAGE:latest
     - docker push $CI_REGISTRY_IMAGE:latest
@@ -41,8 +32,8 @@ dockerhub-release:
     CI_REGISTRY_IMAGE: index.docker.io/$DOCKER_USERNAME/$CI_PROJECT_NAME
   before_script:
     - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD" $CI_REGISTRY
+    - docker build --pull -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME" .
   script:
-    - docker tag $IMAGE_NAME $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
     - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
     - docker tag $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME $CI_REGISTRY_IMAGE:latest
     - docker push $CI_REGISTRY_IMAGE:latest

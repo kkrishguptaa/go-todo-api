@@ -13,14 +13,18 @@ func CreateTodo(ctx *gin.Context) {
   var todo types.TodoWithoutID
 
   if err := ctx.ShouldBindJSON(&todo); err != nil {
-    ctx.IndentedJSON(http.StatusBadRequest, err)
+    ctx.IndentedJSON(http.StatusBadRequest, gin.H{
+      "message": err.Error(),
+    })
     return
   }
 
   result, err := database.Collection.InsertOne(context.TODO(), todo)
 
   if err != nil {
-    ctx.IndentedJSON(http.StatusInternalServerError, err)
+    ctx.IndentedJSON(http.StatusInternalServerError, gin.H{
+      "message": err.Error(),
+    })
     return
   }
 

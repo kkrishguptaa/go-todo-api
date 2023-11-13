@@ -3,10 +3,7 @@ package database
 import (
 	"context"
 	"go-todo-api/env"
-	"go-todo-api/types"
 
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
@@ -65,22 +62,4 @@ func getCollection() {
   println("connected to collection Todos")
 
   Collection = collection
-}
-
-func ParseDatabaseTodo(r *bson.M) types.Todo {
-  return types.Todo{
-    ID: (*r)["_id"].(primitive.ObjectID).Hex(),
-    Item: (*r)["title"].(string),
-    Completed: (*r)["completed"].(bool),
-  }
-}
-
-func ParseDatabaseTodos(r *[]bson.M) []types.Todo {
-  var todos []types.Todo
-
-  for _, result := range *r {
-    todos = append(todos, ParseDatabaseTodo(&result))
-  }
-
-  return todos
 }

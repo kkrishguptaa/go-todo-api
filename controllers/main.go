@@ -1,8 +1,10 @@
 package controllers
 
 import (
-	"go-todo-api/controllers/todos/get"
-	"go-todo-api/controllers/todos/post"
+	delete "go-todo-api/controllers/todos/DELETE"
+	get "go-todo-api/controllers/todos/GET"
+	patch "go-todo-api/controllers/todos/PATCH"
+	post "go-todo-api/controllers/todos/POST"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -12,6 +14,10 @@ var GetTodo = get.GetTodo
 var GetAllTodos = get.GetAllTodos
 
 var CreateTodo = post.CreateTodo
+
+var PatchTodo = patch.PatchTodo
+
+var DeleteTodo = delete.DeleteTodo
 
 func Default(routes gin.RoutesInfo) gin.HandlerFunc {
 	return func(context *gin.Context) {

@@ -33,6 +33,9 @@ gitlab-cr-release:
 
 dockerhub-release:
   stage: release
+  needs:
+    - job: build
+      artifacts: true
   variables:
     CI_REGISTRY: docker.io
     CI_REGISTRY_IMAGE: index.docker.io/$DOCKER_USERNAME/$CI_PROJECT_NAME

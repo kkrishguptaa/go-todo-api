@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY . .
 
-RUN go get -d -v ./...
+RUN go get
 
 RUN go build -tags=jsoniter -o app .
 

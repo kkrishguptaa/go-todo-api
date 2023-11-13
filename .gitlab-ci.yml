@@ -34,7 +34,7 @@ gitlab-cr-release:
       when: always
 
 dockerhub-release:
-  stage: releave
+  stage: release
   variables:
     CI_REGISTRY: docker.io
     CI_REGISTRY_IMAGE: index.docker.io/$DOCKER_USERNAME/$CI_PROJECT_NAME

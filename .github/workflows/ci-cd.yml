@@ -107,7 +107,8 @@ jobs:
       - uses: TriPSs/conventional-changelog-action@v4
         id: changelog
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ github.token }}
+          release-count: 0
       - uses: softprops/action-gh-release@v1
         if: ${{ steps.changelog.outputs.skipped == 'false' }}
         with:
@@ -136,7 +137,7 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          password: ${{ github.token }}
       - uses: docker/metadata-action@v3
         if: ${{ steps.changelog.outputs.skipped == 'false' }}
         id: meta

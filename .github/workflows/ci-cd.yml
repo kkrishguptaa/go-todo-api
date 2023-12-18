@@ -1,0 +1,181 @@
+name: CI/CD
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v4
+        with:
+          go-version: "1.21.3"
+      - name: install dependencies
+        run: go mod download
+      - name: verify dependencies
+        run: go mod verify
+      - name: lint
+        run: go vet ./...
+  build:
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v4
+        with:
+          go-version: "1.21.3"
+      - name: install dependencies
+        run: go mod download
+      - name: verify dependencies
+        run: go mod verify
+      - name: build
+        run: go build -tags=jsoniter -o app .
+
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v4
+        with:
+          go-version: "1.21.3"
+      - name: warning
+        run: echo "Reminder to create test cases"
+      - name: install dependencies
+        run: go mod download
+      - name: verify dependencies
+        run: go mod verify
+      - name: test
+        run: go test -v ./...
+
+  cross-build:
+    needs: test
+    if: ${{ steps.changelog.outputs.skipped == 'false' }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        platform:
+          [
+            "aix/ppc64",
+            "android/386",
+            "android/amd64",
+            "android/arm",
+            "android/arm64",
+            "darwin/amd64",
+            "darwin/arm64",
+            "dragonfly/amd64",
+            "freebsd/386",
+            "freebsd/amd64",
+            "freebsd/arm",
+            "freebsd/arm64",
+            "illumos/amd64",
+            "ios/amd64",
+            "ios/arm64",
+            "js/wasm",
+            "linux/386",
+            "linux/amd64",
+            "linux/arm",
+            "linux/arm64",
+            "linux/mips",
+            "linux/mips64",
+            "linux/mips64le",
+            "linux/mipsle",
+            "linux/ppc64",
+            "linux/ppc64le",
+            "linux/riscv64",
+            "linux/s390x",
+            "netbsd/386",
+            "netbsd/amd64",
+            "netbsd/arm",
+            "netbsd/arm64",
+            "openbsd/386",
+            "openbsd/amd64",
+            "openbsd/arm",
+            "openbsd/arm64",
+            "openbsd/mips64",
+            "plan9/386",
+            "plan9/amd64",
+            "plan9/arm",
+            "solaris/amd64",
+            "windows/386",
+            "windows/amd64",
+            "windows/arm",
+            "windows/arm64",
+          ]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v4
+        with:
+          go-version: "1.21.3"
+      - name: install dependencies
+        run: go mod download
+      - name: verify dependencies
+        run: go mod verify
+      - name: cross-build
+        run: go build -tags=jsoniter -o dist/${{ matrix.platform }} .
+        env:
+          GOOS: ${{ matrix.platform }}
+          GOARCH: ${{ matrix.platform }}
+      - name: upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ matrix.platform }}
+          path: dist/${{ matrix.platform }}
+
+  release:
+    if: ${{ steps.changelog.outputs.skipped == 'false' }}
+    needs: cross-build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: TriPSs/conventional-changelog-action@v4
+        id: changelog
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: marvinpinto/action-automatic-releases@latest
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          automatic_release_tag: ${{ steps.changelog.outputs.tag }}
+          prerelease: false
+          draft: false
+          files: |
+            dist/*
+          commit_message: ${{ steps.changelog.outputs.tag }}
+          release_title: ${{ steps.changelog.outputs.clean_changelog }}
+      - name: docker build
+        run: docker build -t go-todo-api .
+      - name: login docker.io
+        uses: docker/login-action@v3
+        with:
+          registry: docker.io
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: login ghcr.io
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ env.GITHUB_REPOSITORY_OWNER }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/metadata-action@v3
+        id: meta
+        with:
+          images: |
+            docker.io/${{ secrets.DOCKER_USERNAME }}/go-todo-api
+            ghcr.io/${{ github.repository }}
+          tags: |
+            latest
+            ${{ steps.changelog.outputs.tag }}
+      - uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}

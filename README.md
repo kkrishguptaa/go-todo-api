@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://gitlab.com/xkrishguptaa/go-todo-api/-/raw/main/assets/logo.png" height="100px" width="100px" />
+  <img src="https://github.com/xkrishguptaa/go-todo-api/raw/main/assets/logo.png" height="100px" width="100px" />
   <br />
   <h1>Go Todo API</h1>
   <p>Supports retrieval, creation, modification and deletion of Todos</p>

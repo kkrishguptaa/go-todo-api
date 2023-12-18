@@ -1,4 +1,13 @@
-# 1.6.0 (2023-12-18)
+## [1.6.1](https://github.com/xkrishguptaa/go-todo-api/compare/v1.6.0...v1.6.1) (2023-12-18)
+
+
+### Bug Fixes
+
+* don't release on prs ([ff339cc](https://github.com/xkrishguptaa/go-todo-api/commit/ff339cc31c7076ed410d004d02d229b9cf13d144))
+
+
+
+# [1.6.0](https://github.com/xkrishguptaa/go-todo-api/compare/1de6790a247b0daf9a4becdfda0caaea15f1315d...v1.6.0) (2023-12-18)
 
 
 ### Bug Fixes

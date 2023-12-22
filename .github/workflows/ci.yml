@@ -64,51 +64,6 @@ jobs:
       - name: test
         run: go test -v ./...
 
-  cross-build:
-    needs: test
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        platform:
-          [
-            ["darwin", "amd64"],
-            ["darwin", "arm64"],
-            ["freebsd", "386"],
-            ["freebsd", "amd64"],
-            ["freebsd", "arm"],
-            ["js", "wasm"],
-            ["linux", "386"],
-            ["linux", "amd64"],
-            ["linux", "arm"],
-            ["linux", "arm64"],
-            ["windows", "386"],
-            ["windows", "amd64"],
-            ["windows", "arm"],
-            ["windows", "arm64"],
-          ]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v4
-        with:
-          go-version: "1.21.3"
-      - name: install dependencies
-        run: go mod download
-      - name: verify dependencies
-        run: go mod verify
-
-      - name: cross-build
-        run: |
-          export GOOS=${{ matrix.platform[0] }}
-          export GOARCH=${{ matrix.platform[1] }}
-
-          go build -tags=jsoniter -o dist/$GOOS_$GOARCH .
-
-      - name: upload artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ env.APP_NAME }}-${{ matrix.platform[0] }}_${{ matrix.platform[1] }}
-          path: dist/**
-
   changelog:
     needs: test
     if: github.event_name != 'pull_request'

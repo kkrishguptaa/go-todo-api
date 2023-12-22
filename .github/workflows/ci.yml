@@ -151,7 +151,7 @@ jobs:
 
   deploy:
     needs: changelog
-    if: github.event_name != 'pull_request' && needs.changelog.outputs.skipped.skipped == 'false'
+    if: github.event_name != 'pull_request' && needs.changelog.outputs.skipped == 'false'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

@@ -17,55 +17,70 @@ env:
 
 jobs:
   lint:
+    name: Lint
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Go
+        uses: actions/setup-go@v4
         with:
           go-version: ${{ env.GO_VERSION }}
-      - name: install dependencies
+      - name: Install Dependencies
         run: go mod download
-      - name: verify dependencies
+      - name: Verify Dependencies
         run: go mod verify
-      - name: lint
+      - name: Lint ${{ env.APP_NAME }}
         run: go vet ./...
 
   build:
-    needs: lint
+    name: Build
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Go
+        uses: actions/setup-go@v4
         with:
           go-version: ${{ env.GO_VERSION }}
-      - name: install dependencies
+      - name: Install Dependencies
         run: go mod download
-      - name: verify dependencies
+      - name: Verify Dependencies
         run: go mod verify
-      - name: build
+      - name: Build ${{ env.APP_NAME }}
         run: |
           chmod +x ./scripts/build.sh
           ./scripts/build.sh
 
   test:
+    name: Test
     needs: build
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Go
+        uses: actions/setup-go@v4
         with:
-          go-version: "1.21.3"
-      - name: warning
+          go-version: ${{ env.GO_VERSION }}
+      - name: "Warning: No test cases"
         run: echo "Reminder to create test cases"
-      - name: install dependencies
+      - name: Install Dependencies
         run: go mod download
-      - name: verify dependencies
+      - name: Verify Dependencies
         run: go mod verify
-      - name: test
+      - name: Test ${{ env.APP_NAME }}
         run: go test -v ./...
 
   changelog:
-    needs: test
+    name: Changelog
+    needs:
+      - lint
+      - build
+      - test
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
 
@@ -84,7 +99,8 @@ jobs:
         run: |
           git checkout -b ${{ env.PR_BRANCH }}
 
-      - uses: TriPSs/conventional-changelog-action@v4
+      - name: Create Changelog
+        uses: TriPSs/conventional-changelog-action@v4
         id: changelog
         with:
           github-token: ${{ github.token }}
@@ -96,21 +112,21 @@ jobs:
           version-file: .github/package.yaml
           create-summary: true
 
-      - name: Create PR
+      - name: Create Changelog PR
         if: steps.changelog.outputs.skipped == 'false'
         run: |
           gh pr create --base main --head ${{ env.PR_BRANCH }} --title 'chore(release): ${{ steps.changelog.outputs.tag }} [skip-ci]' --body '${{ steps.changelog.outputs.clean_changelog }}'
         env:
           GH_TOKEN: ${{ github.token }}
 
-      - name: Approve PR
+      - name: Approve Changelog PR
         if: steps.changelog.outputs.skipped == 'false'
         run: |
           gh pr review --approve ${{ env.PR_BRANCH }}
         env:
           GH_TOKEN: ${{ secrets.GH_OWNER_TOKEN }}
 
-      - name: Merge PR
+      - name: Merge Changelog PR
         if: steps.changelog.outputs.skipped == 'false'
         run: |
           gh pr merge --squash --auto --delete-branch ${{ env.PR_BRANCH }}
@@ -118,24 +134,30 @@ jobs:
           GH_TOKEN: ${{ secrets.GH_OWNER_TOKEN }}
 
   release:
+    name: Release
     needs: changelog
     if: github.event_name != 'pull_request' && needs.changelog.outputs.skipped == 'false'
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v4
         with:
           go-version: ${{ env.GO_VERSION }}
-      - name: install dependencies
+      - name: Install Dependencies
         run: go mod download
-      - name: verify dependencies
+      - name: Verify Dependencies
         run: go mod verify
-      - name: build
+      - name: Cross-Build ${{ env.APP_NAME }}
         run: |
           chmod +x ./scripts/build.sh
           CROSS_BUILD=true APP_NAME=${{ env.APP_NAME }} VERSION=${{ needs.changelog.outputs.version }} ./scripts/build.sh
 
-      - uses: softprops/action-gh-release@v1
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
         with:
           token: ${{ secrets.GH_OWNER_TOKEN }}
           tag_name: ${{ needs.changelog.outputs.tag }}
@@ -152,28 +174,31 @@ jobs:
             </details>
 
   deploy:
+    name: Deploy Image
     needs: changelog
     if: github.event_name != 'pull_request' && needs.changelog.outputs.skipped == 'false'
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-      - name: docker build
-        run: docker build -t ${{ env.APP_NAME }} .
-      - name: login docker.io
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Login docker.io
         uses: docker/login-action@v3
         with:
           registry: docker.io
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: login ghcr.io
+      - name: Login ghcr.io
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GH_OWNER_TOKEN }}
 
-      - uses: docker/metadata-action@v3
+      - name: Setup Docker Metadata
+        uses: docker/metadata-action@v3
         id: meta
         with:
           images: |
@@ -184,7 +209,8 @@ jobs:
             ${{ needs.changelog.outputs.version }}
             ${{ github.sha }}
 
-      - uses: docker/build-push-action@v2
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v2
         with:
           context: .
           push: true

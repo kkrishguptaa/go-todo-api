@@ -53,8 +53,10 @@ You can also build the API from source. You need to have Go installed on your sy
 
 ```bash
 go mod download
-go build -o main .
-./main
+go mod verify
+chmod +x ./scripts/build.sh
+APP_NAME=go-todo-api ./scripts/build.sh
+./bin/go-todo-api
 ```
 
 ## 📚 API Documentation

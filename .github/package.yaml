@@ -1,0 +1,2 @@
+# Description: This file is used by the CI pipeline to build and release the application.
+version: 1.6.2

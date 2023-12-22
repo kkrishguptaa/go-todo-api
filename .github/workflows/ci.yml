@@ -51,8 +51,8 @@ jobs:
         run: go mod verify
       - name: Build ${{ env.APP_NAME }}
         run: |
-          chmod +x ./scripts/build.sh
-          ./scripts/build.sh
+          chmod +x ./scripts/build.bash
+          sh ./scripts/build.bash
 
   test:
     name: Test
@@ -153,8 +153,8 @@ jobs:
         run: go mod verify
       - name: Cross-Build ${{ env.APP_NAME }}
         run: |
-          chmod +x ./scripts/build.sh
-          CROSS_BUILD=true APP_NAME=${{ env.APP_NAME }} VERSION=${{ needs.changelog.outputs.version }} ./scripts/build.sh
+          chmod +x ./scripts/build.bash
+          CROSS_BUILD=true VERSION=${{ needs.changelog.outputs.version }} ./scripts/build.bash
 
       - name: Create Release
         uses: softprops/action-gh-release@v1

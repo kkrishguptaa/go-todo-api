@@ -76,14 +76,13 @@ jobs:
       version: ${{ steps.changelog.outputs.version }}
 
     env:
-      PR_BRANCH: release-from-${{ github.sha }}"
+      PR_BRANCH: release-ci-${{ github.sha }}
 
     steps:
       - uses: actions/checkout@v4
       - name: Create Branch
         run: |
-          git branch ${{ env.PR_BRANCH }} "${{ github.sha }}"
-          git checkout ${{ env.PR_BRANCH }}
+          git checkout -b ${{ env.PR_BRANCH }}
 
       - uses: TriPSs/conventional-changelog-action@v4
         id: changelog
@@ -92,6 +91,7 @@ jobs:
           git-user-name: "github-actions[bot]"
           git-user-email: "github-actions[bot]@users.noreply.github.com"
           git-branch: ${{ env.PR_BRANCH }}
+          skip-git-pull: true
           output-file: false
           version-file: .github/package.yaml
           create-summary: true
@@ -134,8 +134,10 @@ jobs:
         run: |
           chmod +x ./scripts/build.sh
           CROSS_BUILD=true APP_NAME=${{ env.APP_NAME }} VERSION=${{ needs.changelog.outputs.version }} ./scripts/build.sh
+
       - uses: softprops/action-gh-release@v1
         with:
+          token: ${{ secrets.GH_OWNER_TOKEN }}
           tag_name: ${{ needs.changelog.outputs.tag }}
           prerelease: false
           draft: false

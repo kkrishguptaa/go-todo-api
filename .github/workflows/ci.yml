@@ -154,7 +154,7 @@ jobs:
       - name: Cross-Build ${{ env.APP_NAME }}
         run: |
           chmod +x ./scripts/build.sh
-          CROSS_BUILD=true APP_NAME=${{ env.APP_NAME }} VERSION=${{ needs.changelog.outputs.version }} ./scripts/build.sh
+          CROSS_BUILD=true VERSION=${{ needs.changelog.outputs.version }} ./scripts/build.sh
 
       - name: Create Release
         uses: softprops/action-gh-release@v1

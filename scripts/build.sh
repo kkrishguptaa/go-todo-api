@@ -1,53 +1,115 @@
+#!/bin/bash
+
+# Source: https://gist.github.com/xkrishguptaa/3c633f4c75f2b319e18880f3b68b1d23#file-go-application-builder-bash
+
+### Helper functions ###
+
+function header() {
+    echo "\033[1;34m$1\033[0m"
+}
+
+function info() {
+    echo "\033[0;32m$1\033[0m"
+}
+
+function debug() {
+    echo "\033[0;33m$1\033[0m"
+}
+
+function success() {
+    echo "\033[0;32m$1\033[0m"
+}
+
+function error() {
+    echo "\033[0;31m$1\033[0m"
+}
+
+# Header
+
+header "Go Application Builder"
+header "======================"
+
+
 cwd=$(pwd)
 
-dir=$(dirname "${BASH_SOURCE[0]}")
+info "Build Context: $cwd"
 
-# Change to script directory
+info "Removing old binaries"
 
-cd $dir
+rm -rf $cwd/bin
 
-rm -rf ../bin
+success "Removed old binaries"
 
-# Set default values
+# Options
 
-cross=false
-v=""
-app="app"
-go_build_tags="jsoniter"
+CrossBuild=false
+AppVersion=""
+AppName="go-todo-api"
+GoBuildTags="jsoniter"
+OutDir="$cwd/bin"
 
-if [ -n "$VERSION" ]; then
-    v="_$VERSION"
+if [[ -n "$CROSS_BUILD" ]]; then
+    CrossBuild=true
 fi
 
-# Check if environment variable is set
-if [[ -n "$CROSS_BUILD" ]]; then
-    cross=true
+if [ -n "$VERSION" ]; then
+    AppVersion="$VERSION"
 fi
 
 if [[ -n "$APP_NAME" ]]; then
-    app=$APP_NAME
+    AppName=$APP_NAME
 fi
+
+if [[ -n "$GO_BUILD_TAGS" ]]; then
+    GoBuildTags=$GO_BUILD_TAGS
+fi
+
+if [[ -n "$OUT_DIR" ]]; then
+    OutDir=$OUT_DIR
+fi
+
+debug "Cross Build: $CrossBuild"
+debug "App Version: $AppVersion"
+debug "App Name: $AppName"
+debug "Go Build Tags: $GoBuildTags"
+debug "Out Dir: $OutDir"
 
 # Build
 
-if [[ "$cross" = true ]]; then
-    mkdir -p ./bin
+AppSuffix=""
 
+if [[ AppVersion != "" ]]; then
+    AppSuffix="-v$AppVersion"
+fi
+
+mkdir -p $OutDir
+
+if [[ "$CrossBuild" = true ]]; then
     platforms=("linux/amd64" "linux/arm64" "darwin/amd64" "darwin/arm64" "windows/amd64" "windows/arm64")
+
+    debug "Platforms: ${platforms[@]}"
 
     for platform in "${platforms[@]}"; do
       IFS='/' read -ra p <<< "$platform"
 
-      os=${p[0]}
-      arch=${p[1]}
+      GOOS=${p[0]}
+      GOARCH=${p[1]}
 
-      echo "\033[1mBuilding $app$v for $os $arch\033[0m"
-      GOOS=$os GOARCH=$arch go build -tags "$go_build_tags" -o ../bin/$app-$os-$arch$v ../
+      header "Building for $GOOS/$GOARCH"
+      header "--------------------------"
+
+      go build -tags "$GoBuildTags" -o $OUTDIR/$AppName-$GOOS-$GOARCH$AppSuffix $cwd
+
+      success "Built for $GOOS/$GOARCH"
     done
 
 else
-    mkdir -p ./bin
-    go build -tags "$go_build_tags" -o ../bin/$app$v ../
+    header "Building for current platform"
+    header "-----------------------------"
+
+    go build -tags "$GoBuildTags" -o $OutDir/$AppName$AppSuffix $cwd
+
+    success "Built for current platform"
 fi
 
 cd $cwd

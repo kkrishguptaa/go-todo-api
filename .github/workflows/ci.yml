@@ -100,7 +100,7 @@ jobs:
           git checkout -b ${{ env.PR_BRANCH }}
 
       - name: Create Changelog
-        uses: TriPSs/conventional-changelog-action@25971cecbaa4b86f8524f86fcb8b30e80bd59534 # v5
+        uses: TriPSs/conventional-changelog-action@dd734f74fce61a6e02f821ee1b5930bc79a23534 # v5
         id: changelog
         with:
           github-token: ${{ github.token }}
@@ -198,7 +198,7 @@ jobs:
           password: ${{ secrets.GH_OWNER_TOKEN }}
 
       - name: Setup Docker Metadata
-        uses: docker/metadata-action@9dc751fe249ad99385a2583ee0d084c400eee04e # v5
+        uses: docker/metadata-action@dbef88086f6cef02e264edb7dbf63250c17cef6c # v5
         id: meta
         with:
           images: |

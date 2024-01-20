@@ -17,7 +17,7 @@ services:
       - mongodb
   mongodb:
     container_name: go-todo-api_mongodb
-    image: mongo:7.0@sha256:3f765972fa2d1d0a748762ba43930f06f0c3ea58986582dd4663fe5ad7b63f0e
+    image: mongo:7.0@sha256:192e2724093257a7db12db6cbafd92e3e5d51937f13846d49ea555cea85787ce
     ports:
       - "27017:27017"
     networks:

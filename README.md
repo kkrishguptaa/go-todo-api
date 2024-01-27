@@ -1,3 +1,5 @@
+> **NOTICE**: This `learning` project has been completed ✅ So I'm saying bye to it and archiving it! You can find my future projects on [GitHub](https://github.com/xkrishguptaa)
+
 <div align="center">
   <img src="https://github.com/xkrishguptaa/go-todo-api/raw/main/assets/logo.png" height="100px" width="100px" />
   <br />

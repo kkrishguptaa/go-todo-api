@@ -3,9 +3,9 @@ module go-todo-api
 go 1.21.6
 
 require (
-	github.com/gin-gonic/gin v1.9.1
+	github.com/gin-gonic/gin v1.11.0
 	github.com/joho/godotenv v1.5.1
-	go.mongodb.org/mongo-driver v1.13.1
+	go.mongodb.org/mongo-driver/v2 v2.3.0
 )
 
 require (
